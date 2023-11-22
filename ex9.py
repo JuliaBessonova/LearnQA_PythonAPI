@@ -1,5 +1,4 @@
 import requests
-import json
 
 passwords = ["password", "123456", "12345678", "qwerty", "abc123", "monkey", "1234567", "letmein", "trustno1",
              "dragon", "baseball", "111111", "iloveyou", "master", "sunshine", "ashley", "bailey", "passw0rd",
