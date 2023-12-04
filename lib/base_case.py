@@ -20,7 +20,7 @@ class BaseCase:
 
         return response_as_dict[name]
 
-    def prepare_registration_data(self, eemail=None):
+    def prepare_registration_data(self, email=None):
         if email is None:
             base_part = "learnqa"
             domain = "example.com"
