@@ -2,7 +2,6 @@ import pytest
 import requests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
-from datetime import datetime
 from random import choice
 from string import ascii_lowercase
 
@@ -14,22 +13,9 @@ class TestUserRegister(BaseCase):
         ('lastName'),
         ('email')
     ]
-    def setup(self):
-        base_part = "learnqa"
-        domain = "example.com"
-        random_part = datetime.now().strftime("%m%d%Y%H%M%S")
-        self.email = f"{base_part}{random_part}@{domain}"
-        self.invalid_email = f"{base_part}{random_part}{domain}"
-        self.long_username = ''.join(choice(ascii_lowercase) for _ in range(251))
 
     def create_user_successfully(self):
-        data = {
-            'password': '123',
-            'username': 'learnqa',
-            'firstName': 'learnqa',
-            'lastName': 'learnqa',
-            'email': self.email
-        }
+        data = self.prepare_registration_data()
 
         response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
 
@@ -37,13 +23,7 @@ class TestUserRegister(BaseCase):
         Assertions.assert_json_has_key(response, "id")
     def test_create_user_with_existing_email(self):
         email = 'vinkotov@example.com'
-        data = {
-            'password': '123',
-            'username': 'learnqa',
-            'firstName': 'learnqa',
-            'lastName': 'learnqa',
-            'email': email
-        }
+        data = self.prepare_registration_data(email)
 
         response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
 
@@ -52,13 +32,8 @@ class TestUserRegister(BaseCase):
             f"Unexpected response content {response.content}"
 
     def test_create_user_invalid_email(self):
-        data = {
-            'password': '123',
-            'username': 'learnqa',
-            'firstName': 'learnqa',
-            'lastName': 'learnqa',
-            'email': self.invalid_email
-        }
+        email = "invalid email"
+        data = self.prepare_registration_data(email)
 
         response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
 
@@ -68,12 +43,13 @@ class TestUserRegister(BaseCase):
 
     @pytest.mark.parametrize('condition', exclude_params)
     def test_create_user_with_missing_arguments(self, condition):
+        email = self.prepare_registration_data()["email"]
         data = {
             'password': '123',
             'username': 'learnqa',
             'firstName': 'learnqa',
             'lastName': 'learnqa',
-            'email': self.email
+            'email': email
         }
 
         data.pop(condition)
@@ -86,12 +62,13 @@ class TestUserRegister(BaseCase):
 
 
     def test_create_user_with_short_username(self):
+        email = self.prepare_registration_data()["email"]
         data = {
             'password': '123',
             'username': 'l',
             'firstName': 'learnqa',
             'lastName': 'learnqa',
-            'email': self.email
+            'email': email
         }
 
         response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
@@ -102,12 +79,14 @@ class TestUserRegister(BaseCase):
 
 
     def test_create_user_with_long_username(self):
+        email = self.prepare_registration_data()["email"]
+        long_username = ''.join(choice(ascii_lowercase) for _ in range(251))
         data = {
             'password': '123',
-            'username': self.long_username,
+            'username': long_username,
             'firstName': 'learnqa',
             'lastName': 'learnqa',
-            'email': self.email
+            'email': email
         }
 
         response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
