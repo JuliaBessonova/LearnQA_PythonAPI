@@ -1,5 +1,5 @@
 import pytest
-import requests
+from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
 from random import choice
@@ -17,7 +17,7 @@ class TestUserRegister(BaseCase):
     def create_user_successfully(self):
         data = self.prepare_registration_data()
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_code_status(response, 200)
         Assertions.assert_json_has_key(response, "id")
@@ -25,7 +25,7 @@ class TestUserRegister(BaseCase):
         email = 'vinkotov@example.com'
         data = self.prepare_registration_data(email)
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_code_status(response, 400)
         assert response.content.decode("utf-8") == f"Users with email '{email}' already exists", \
@@ -35,7 +35,7 @@ class TestUserRegister(BaseCase):
         email = "invalid email"
         data = self.prepare_registration_data(email)
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_code_status(response, 400)
         assert response.content.decode("utf-8") == f"Invalid email format", \
@@ -54,7 +54,7 @@ class TestUserRegister(BaseCase):
 
         data.pop(condition)
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_code_status(response, 400)
         assert response.content.decode("utf-8") == f"The following required params are missed: {condition}", \
@@ -71,7 +71,7 @@ class TestUserRegister(BaseCase):
             'email': email
         }
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_code_status(response, 400)
         assert response.content.decode("utf-8") == f"The value of 'username' field is too short", \
@@ -89,7 +89,7 @@ class TestUserRegister(BaseCase):
             'email': email
         }
 
-        response = requests.post("https://playground.learnqa.ru/api/user/", data=data)
+        response = MyRequests.post("/user/", data=data)
 
         Assertions.assert_code_status(response, 400)
         assert response.content.decode("utf-8") == f"The value of 'username' field is too long", \
