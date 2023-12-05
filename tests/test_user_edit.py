@@ -1,8 +1,11 @@
 from lib.my_requests import MyRequests
 from lib.base_case import BaseCase
 from lib.assertions import Assertions
+import allure
 
+@allure.epic("User edit cases")
 class TestUserEdit(BaseCase):
+    @allure.description("This test successfully edits just created user")
     def test_edit_just_created_user(self):
         # REGISTER
         register_data = self.prepare_registration_data()
@@ -44,7 +47,7 @@ class TestUserEdit(BaseCase):
 
         Assertions.assert_json_value_by_name(response4, "firstName", new_name, "Wrong name of the user after edit")
 
-
+    @allure.description("This test tries to edit not authorised user")
     def test_change_not_authorised_user(self):
         # EDIT
         new_name = 'Changed Name'
@@ -53,7 +56,7 @@ class TestUserEdit(BaseCase):
         Assertions.assert_code_status(response, 400)
         assert response.content.decode("utf-8") == "Auth token not supplied", f"Unexpected response content {response.content}"
 
-
+    @allure.description("This test tries to edit user's data while being authorized with another one")
     def test_edit_another_user(self):
         # REGISTER USERS
         register_data_1 = self.prepare_registration_data()
@@ -93,7 +96,7 @@ class TestUserEdit(BaseCase):
 
         Assertions.assert_code_status(response4, 400)
 
-
+    @allure.description("This test tries to edit user's email with an email of invalid format")
     def test_edit_user_with_invalid_email_format(self):
         # REGISTER
         register_data = self.prepare_registration_data()
@@ -128,7 +131,7 @@ class TestUserEdit(BaseCase):
         Assertions.assert_code_status(response3, 400)
         assert response3.content.decode("utf-8") == "Invalid email format", f"Unexpected response content {response.content}"
 
-
+    @allure.description("This test tries to edit user's name with too short value")
     def test_edit_username_with_short_name(self):
         # REGISTER
         register_data = self.prepare_registration_data()
